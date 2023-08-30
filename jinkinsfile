@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    docker.build('my-laravel-app:latest', '-f Dockerfile .')
+                    docker.withRegistry('https://registry.example.com', 'my-registry-credentials') {
+                        docker.image('my-laravel-app:latest').push()
+                    }
+                }
+            }
+        }
+        stage('Deploy to Docker Compose') {
+            steps {
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+}
