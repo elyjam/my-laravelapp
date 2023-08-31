@@ -1,20 +1,47 @@
 pipeline {
     agent any
-    
+
+    environment {
+        DOCKER_IMAGE_NAME = 'my-laravel-app:latest'
+        DOCKERFILE_PATH = 'Dockerfile'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+    }
+
     stages {
-        stage('Build and Push Docker Image') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('my-laravel-app:latest', '-f Dockerfile .')
-                    docker.withRegistry('https://registry.example.com', 'my-registry-credentials') {
-                        docker.image('my-laravel-app:latest').push()
+                    // Build the Docker image using the provided Dockerfile
+                    docker.build("${DOCKER_IMAGE_NAME}", "-f ${DOCKERFILE_PATH} .")
+                }
+            }
+        }
+
+        stage('Push Docker Image to Registry') {
+            steps {
+                script {
+                    // You can authenticate with your Docker registry here if needed
+
+                    // Push the Docker image to the registry
+                    docker.withRegistry('', '') {
+                        docker.image("${DOCKER_IMAGE_NAME}").push()
                     }
                 }
             }
         }
-        stage('Deploy to Docker Compose') {
+
+        stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose up -d'
+                script {
+                    // Deploy using docker-compose
+                    sh "docker-compose -f ${DOCKER_COMPOSE_FILE} up -d"
+                }
             }
         }
     }
