@@ -6,6 +6,10 @@ pipeline {
         DOCKERFILE_PATH = 'Dockerfile'
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
+    tools {
+    // Use the name you specified in the Git installation configuration
+    git 'Git'
+}
 
     stages {
         stage('Checkout') {
