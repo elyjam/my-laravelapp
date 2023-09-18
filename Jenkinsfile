@@ -9,32 +9,36 @@ pipeline {
     // Use the name you specified in the Git installation configuration
     git 'Git'
 }
-    stages {
-        stage('Check Docker Version') {
-            steps {
-                script {
-                    def dockerVersion = sh(script: 'docker --version', returnStatus: true)
-                    echo "Docker Version: ${dockerVersion}"
-                }
+    node {
+    stage('Check Docker Version') {
+        try {
+            def dockerVersion = sh(script: 'docker --version', returnStatus: true)
+            if (dockerVersion == 0) {
+                echo "Docker Version: "
+                sh 'docker --version'
+            } else {
+                error "Docker is not installed or not accessible."
             }
+        } catch (Exception e) {
+            error "Error checking Docker version: ${e.message}"
         }
-
-        // Your existing stages here
-
-        stage('Build and Test') {
-            steps {
-                // Add your build and test steps here
-            }
-        }
-
-        // Add more stages as needed
     }
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
+    // Your existing stages here
+
+    stage('Build and Test') {
+        try {
+            // Add your build and test steps here
+        } catch (Exception e) {
+            error "Error during build and test: ${e.message}"
         }
+    }
+
+    // Add more stages as needed
+}
+
+    stages {
+    
 
         stage('Build Docker Image') {
             steps {
