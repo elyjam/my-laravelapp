@@ -1,5 +1,26 @@
 pipeline {
     agent any
+    stages {
+        stage('Check Docker Version') {
+            steps {
+                script {
+                    def dockerVersion = sh(script: 'docker --version', returnStatus: true)
+                    echo "Docker Version: ${dockerVersion}"
+                }
+            }
+        }
+
+        // Your existing stages here
+
+        stage('Build and Test') {
+            steps {
+                // Add your build and test steps here
+            }
+        }
+
+        // Add more stages as needed
+    }
+
 
     environment {
         DOCKER_IMAGE_NAME = 'my-laravel-app:latest'
