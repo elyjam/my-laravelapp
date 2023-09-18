@@ -1,5 +1,14 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_IMAGE_NAME = 'my-laravel-app:latest'
+        DOCKERFILE_PATH = 'Dockerfile'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+    }
+    tools {
+    // Use the name you specified in the Git installation configuration
+    git 'Git'
+}
     stages {
         stage('Check Docker Version') {
             steps {
@@ -21,18 +30,6 @@ pipeline {
         // Add more stages as needed
     }
 
-
-    environment {
-        DOCKER_IMAGE_NAME = 'my-laravel-app:latest'
-        DOCKERFILE_PATH = 'Dockerfile'
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-    }
-    tools {
-    // Use the name you specified in the Git installation configuration
-    git 'Git'
-}
-
-    stages {
         stage('Checkout') {
             steps {
                 checkout scm
@@ -69,5 +66,4 @@ pipeline {
                 }
             }
         }
-    }
 }
