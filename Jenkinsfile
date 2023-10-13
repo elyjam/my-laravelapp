@@ -9,6 +9,14 @@ pipeline {
                 checkout scm  // Check out the source code from your version control system
             }
         }
+        stage('Install Docker') {
+          steps {
+            script {
+              def dockerTool = tool name: 'Docker', type: 'Tool Type Name' // Change 'Tool Type Name' to the actual tool type name configured in Jenkins
+            env.PATH = "${dockerTool}:${env.PATH}"
+              }
+          }
+       }
         stage('Build Docker Image') {
             steps {
                 script {
