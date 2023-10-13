@@ -1,38 +1,40 @@
 pipeline {
     agent any
-
     environment {
-        DOCKER_HOME = tool name: 'Docker', type: 'Tool Type Name' // Replace 'Tool Type Name'
+        DOCKER_IMAGE = 'my-laravel-app'  // Docker image name
     }
-
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                // Add the checkout SCM steps here
+                checkout scm  // Check out the source code from your version control system
             }
         }
-
-    stage('Build Docker Image') {
-      when {
-        expression {
-            currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-        }
-          }
-          steps {
-            sh "docker build -t my-laravelapp ."
-          }
-       }
-  stage('Install Composer Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                // Add steps to install Composer dependencies
-                sh 'composer install'
+                script {
+                    // Build the Docker image
+                    docker.build env.DOCKER_IMAGE, "-f Dockerfile ."
+                }
             }
         }
-
- stage('Run Tests') {
+        stage('Install Composer Dependencies') {
             steps {
-                // Add steps to run tests
-                sh 'phpunit'
+                script {
+                    // Install Composer dependencies in the Docker container
+                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
+                        sh 'composer install'
+                    }
+                }
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run Laravel tests in the Docker container
+                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
+                        sh 'php artisan test'  // Replace with your Laravel test command
+                    }
+                }
             }
         }
     }
