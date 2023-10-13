@@ -10,13 +10,13 @@ pipeline {
             }
         }
         stage('Install Docker') {
-          steps {
-            script {
-              def dockerTool = tool name: 'Docker', type: 'Tool Type Name' // Change 'Tool Type Name' to the actual tool type name configured in Jenkins
-            env.PATH = "${dockerTool}:${env.PATH}"
-              }
+           steps {
+             script {
+             def dockerTool = tool name: 'Docker', type: 'Tool Type Name' // Replace 'Tool Type Name'
+             env.PATH = "${dockerTool}:${env.PATH}"
+               }
+             }
           }
-       }
         stage('Build Docker Image') {
             steps {
                 script {
