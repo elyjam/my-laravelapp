@@ -12,27 +12,24 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    withDockerServer([uri: "tcp://${DOCKER_HOME}/"]) {
-                        withDockerRegistry([url: 'https://registry.example.com', credentialsId: 'docker-hub-credentials']) {
-                            // Add steps to build the Docker image
-                            sh 'docker build -t my-image .'
-                        }
-                    }
-                }
-            }
+    stage('Build Docker Image') {
+      when {
+        expression {
+            currentBuild.resultIsBetterOrEqualTo('SUCCESS')
         }
-
-        stage('Install Composer Dependencies') {
+          }
+          steps {
+            sh "docker build -t my-laravelapp ."
+          }
+       }
+  stage('Install Composer Dependencies') {
             steps {
                 // Add steps to install Composer dependencies
                 sh 'composer install'
             }
         }
 
-        stage('Run Tests') {
+ stage('Run Tests') {
             steps {
                 // Add steps to run tests
                 sh 'phpunit'
