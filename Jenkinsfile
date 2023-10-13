@@ -18,6 +18,7 @@ pipeline {
                     withDockerServer([uri: "tcp://${DOCKER_HOME}/"]) {
                         withDockerRegistry([url: 'https://registry.example.com', credentialsId: 'docker-hub-credentials']) {
                             // Add steps to build the Docker image
+                            sh 'docker build -t my-image .'
                         }
                     }
                 }
@@ -27,12 +28,14 @@ pipeline {
         stage('Install Composer Dependencies') {
             steps {
                 // Add steps to install Composer dependencies
+                sh 'composer install'
             }
         }
 
         stage('Run Tests') {
             steps {
                 // Add steps to run tests
+                sh 'phpunit'
             }
         }
     }
