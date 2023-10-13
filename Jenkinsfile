@@ -1,48 +1,38 @@
 pipeline {
     agent any
+
     environment {
-        DOCKER_IMAGE = 'my-laravel-app'  // Docker image name
+        DOCKER_HOME = tool name: 'Docker', type: 'Tool Type Name' // Replace 'Tool Type Name'
     }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                checkout scm  // Check out the source code from your version control system
+                // Add the checkout SCM steps here
             }
         }
-        stage('Install Docker') {
-           steps {
-             script {
-             def dockerTool = tool name: 'Docker', type: 'Tool Type Name' // Replace 'Tool Type Name'
-             env.PATH = "${dockerTool}:${env.PATH}"
-               }
-             }
-          }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    docker.build env.DOCKER_IMAGE, "-f Dockerfile ."
+                    withDockerServer([uri: "tcp://${DOCKER_HOME}/"]) {
+                        withDockerRegistry([url: 'https://registry.example.com', credentialsId: 'docker-hub-credentials']) {
+                            // Add steps to build the Docker image
+                        }
+                    }
                 }
             }
         }
+
         stage('Install Composer Dependencies') {
             steps {
-                script {
-                    // Install Composer dependencies in the Docker container
-                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
-                        sh 'composer install'
-                    }
-                }
+                // Add steps to install Composer dependencies
             }
         }
+
         stage('Run Tests') {
             steps {
-                script {
-                    // Run Laravel tests in the Docker container
-                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
-                        sh 'php artisan test'  // Replace with your Laravel test command
-                    }
-                }
+                // Add steps to run tests
             }
         }
     }
