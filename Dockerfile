@@ -42,3 +42,6 @@ USER www-data
 
 # Change user back to root
 USER root
+
+
+CMD ["php", "artisan", "serve"]
