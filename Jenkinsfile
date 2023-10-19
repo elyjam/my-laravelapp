@@ -17,6 +17,16 @@ pipeline {
                 }
             }
         }
+        stage('Install Composer Dependencies') {
+            steps {
+                script {
+                    // Install Composer dependencies in the Docker container
+                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
+                        sh 'composer install'
+                    }
+                }
+            }
+        }
         stage('Run Tests') {
             steps {
                 script {
