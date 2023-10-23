@@ -17,7 +17,16 @@ pipeline {
                 }
             }
         }
-       
+       stage('Run Tests') {
+            steps {
+                script {
+                    // Run Laravel tests in the Docker container
+                    docker.image(env.DOCKER_IMAGE).inside('-v $(pwd):/var/www/html') {
+                        sh 'php artisan test'  // Replace with your Laravel test command
+                    }
+                }
+            }
+
         }
     }
 }
